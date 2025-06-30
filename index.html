@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档自动访问</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 400px;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .loading {
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .manual-link {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            word-break: break-all;
+            display: none;
+        }
+        a {
+            color: #87CEEB;
+            text-decoration: none;
+        }
+        .status {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔄 正在自动跳转到文档...</h2>
+        <div class="loading">
+            <div class="spinner"></div>
+            <div class="status" id="status">正在准备访问...</div>
+        </div>
+        
+        <div class="manual-link" id="manualLink">
+            <p>如果没有自动跳转，请点击下方链接：</p>
+            <a href="#" id="docLink">手动访问文档</a>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        function redirectToDocument() {
+            const documentUrl = "https://doc.weixin.qq.com/sheet/e3_APAAOgZlAIIuS1QYHGZS5i46iQvQ8?scode=AG0AOQd3AAgWgPSXCuAPAAOgZlAII&version=4.1.38.6011&platform=win&tab=7y7l6m";
+            
+            // 设置手动链接
+            document.getElementById('docLink').href = documentUrl;
+            document.getElementById('docLink').textContent = '点击访问文档';
+            
+            updateStatus('正在跳转到文档...');
+            
+            // 延迟跳转
+            setTimeout(() => {
+                try {
+                    window.location.href = documentUrl;
+                } catch (error) {
+                    console.error('跳转失败:', error);
+                    updateStatus('自动跳转失败，请点击下方链接手动访问');
+                    document.getElementById('manualLink').style.display = 'block';
+                    document.querySelector('.loading').style.display = 'none';
+                }
+            }, 2000);
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', redirectToDocument);
+
+        // 备用方案：如果5秒后还没跳转，显示手动链接
+        setTimeout(() => {
+            if (!window.location.href.includes('doc.weixin.qq.com')) {
+                document.getElementById('manualLink').style.display = 'block';
+                updateStatus('请点击下方链接手动访问');
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
